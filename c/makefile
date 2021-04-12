@@ -19,6 +19,14 @@ app:$(ObjectFiles)
 #main.o:main.c
 #	gcc -c main.c -I ./include/ -L ./include/ -ltest
 
+#防止歧义
+.PHONY:clean
+
+#@在规则前不输出命令
+#-表示规则失败继续执行
 test:
-	echo $(SrcFiles)
-	echo $(ObjectFiles)
+	@echo $(SrcFiles)
+	@echo $(ObjectFiles)
+clean:
+	@rm -f *.o
+	@rm -f main
