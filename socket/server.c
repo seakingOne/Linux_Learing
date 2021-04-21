@@ -37,6 +37,10 @@ int main(int argc, char **argv)
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serveraddr.sin_port = htons(1234);
 
+	//端口重用
+	int value = 1;
+	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
+
 	ret = bind(fd, &serveraddr, sizeof(serveraddr));
 	if(ret == -1){
 		perror("bind");
