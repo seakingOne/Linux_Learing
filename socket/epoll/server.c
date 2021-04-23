@@ -8,123 +8,99 @@
 int main(int argc, char **argv)
 {
 
-	int lfd, clientfd;
-	int ret;
-	struct sockaddr_in serveraddr, clientaddr; 
-	socklen_t clientsize;
-	char line[256];
+	int lfd, epollfd;
+	int bind_ret;
 
+	int epoll_count;
+
+	struct sockaddr_in addr, client_addr;
+
+	socklen_t client_addr_len = sizeof(client_addr);
+
+	struct epoll_event ev, events[2000];
+
+	char buf[256];
+
+	// 创建监听文件句柄
 	lfd = socket(AF_INET, SOCK_STREAM, 0);
 
-	if(lfd == -1) {
-		perror("socket");
-		return -1;
+	// 绑定端口
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(1234);
+	inet_aton("127.0.0.1", &addr.sin_addr.s_addr);
+
+	bind_ret = bind(lfd, &addr, sizeof(addr));
+	if(bind_ret == -1) {
+		perror("bind error");
+		exit(-1);
 	}
 
-	//setnonblocking(lfd);
+	// 监听
+	listen(lfd, 2000);
 
-	// epoll 处理
-	int epollfd = epoll_create(60);
-	// 注册事件
-	struct epoll_event ev, events[60];
-	ev.data.fd = lfd;
-	// 读事件
+	// epoll create
+	epollfd = epoll_create(2000);
+
 	ev.events = EPOLLIN|EPOLLET;
+	ev.data.fd = lfd;
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, lfd, &ev);
 
-	// bind
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serveraddr.sin_port = htons(1234);
-
-	//端口重用
-	//int value = 1;
-	//setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
-
-	ret = bind(lfd, &serveraddr, sizeof(serveraddr));
-	if(ret == -1){
-		perror("bind");
-		return -1;
-	}
-
-	// listen
-	listen(lfd, 60);
-
-	clientsize = sizeof(clientaddr);
-
+	// epoll 处理
 	while(1) {
-
-		// 等待事件发生
-		int epollnums = epoll_wait(epollfd, events, 60, 500);
-
+	
+		// -1 表示阻塞状态
+		epoll_count = epoll_wait(epollfd, events, 2000, -1);
+		
 		int i;
 
-		printf("epollnums = %d, events = %d, lfd = %d \n", epollnums, events[0], lfd);
-
-		for(i = 0; i < epollnums; i++) {
+		for(i = 0; i < epoll_count; i++) {
+		
 			// 新增连接
 			if(events[i].data.fd == lfd) {
-				int connfd = accept(lfd, (struct sockaddr *)&clientaddr, &clientsize);
 
-				if (connfd == -1) {
-					perror("accept");
-				}
-
-				printf("add new fd...., connfd = %d \n", connfd);
-
-				//注册
-				ev.data.fd = connfd;
-				ev.events = EPOLLIN|EPOLLET;
-				epoll_ctl(epollfd, EPOLL_CTL_ADD, connfd, &ev);
-
-			} 
-			// 如果是读事件
-			else if (events[i].events & EPOLLIN) {
-
-				printf("read event....\n");
-
-				int socketfd = events[i].data.fd;
-
-				if(socketfd < 0) {
-					continue;
-				}
-
-				int ret = read(socketfd, line, sizeof(line));
-
-				// 数据读取完毕
-				if(ret == 0) {
-					printf("read data = %s \n", line);
-					close(socketfd);
-					events[i].data.fd = -1;
-				} else if (ret > 0) {
-					printf("read data = %s \n", line);
-				} else {
-					perror("read");
-				}
-
-				//数据读取完成之后可以写入
-				ev.data.fd = socketfd;
-				ev.events = EPOLLOUT|EPOLLET;
-				epoll_ctl(epollfd, EPOLL_CTL_MOD, lfd, &ev);
+				printf("新增一个连接 \n");
 				
-			 } 
-			 // 如果是写事件
-			 else if (events[i].events & EPOLLOUT) {
+				int acceptfd = accept(lfd, &client_addr, &client_addr_len);
+				if(acceptfd == -1) {
+					printf("accept fail");
+				}
 
-				 printf("write event.....\n");
+				// 读事件
+				ev.events = EPOLLIN|EPOLLET;
+				ev.data.fd = acceptfd;
+				epoll_ctl(epollfd, EPOLL_CTL_ADD, acceptfd, &ev);
 
-				 int socketfd = events[i].data.fd;
-				 write(socketfd, line, strlen(line));
+			} else {
+			
+				// 读事件
+				if(events[i].events & EPOLLIN) {
 
-				 //数据写入之后可以读取
-				 ev.data.fd = socketfd;
-				 ev.events = EPOLLIN|EPOLLET;
-				 epoll_ctl(epollfd, EPOLL_CTL_MOD, lfd, &ev);
-			 
-			 }
+					char buf[256];
+					int read_ret = read(events[i].data.fd, &buf, sizeof(buf));
+
+					printf("read_ret = %d \n", read_ret);
+
+					if(read_ret == 0) {
+					
+						printf("客户端断开连接 \n");
+
+						// 数据读取完成
+						epoll_ctl(epollfd, EPOLL_CTL_DEL, events[i].data.fd, &ev);
+						
+					} else {
+						printf("read data = %s \n", buf);
+					}				
+	
+				}
+			
+			}
+
 		}
+
 
 	}
 
+	return 0;
 
+	
 }
