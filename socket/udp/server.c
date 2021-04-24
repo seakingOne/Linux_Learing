@@ -4,20 +4,10 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-void read_data(int socketfd)
-{
-	char buf[256];
-
-	if(read(socketfd, &buf, sizeof(buf)) > 0){
-		printf("server recv: %s \n", buf);
-	}
-
-}
-
 int main(int argc, char **argv)
 {
 
-	int fd, clientfd;
+	int fd; 
 	int ret;
 	struct sockaddr_in serveraddr, clientaddr; 
 	socklen_t client;
@@ -44,26 +34,20 @@ int main(int argc, char **argv)
 
 
 	client = sizeof(clientaddr);
-	// accept
-	clientfd = accept(fd, &clientaddr, &client);
+	char buf[1024] = {0};
 
-	// deal data
-	int time = 0;
 	while(1) {
-		// read data
-		read_data(clientfd);
-
-		time++;
-		
-		printf("this time is : %d \n", time);
-
-		if(time > 5) {
-			break;
+		ret = recvfrom(fd, &buf, sizeof(buf), 0, &clientaddr, &client);
+		if(ret == -1) {
+			perror("recv");
+			return -1;
 		}
-
+		
+		printf("buf = %s \n", buf);
+		memset(buf, 0, sizeof(buf));
 	}
 
-	close(fd);
-	close(clientfd);
 
+	close(fd);
+	
 }
