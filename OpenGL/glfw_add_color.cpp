@@ -17,6 +17,8 @@
 而且因为它们运行在GPU上，所以它们可以给我们节约宝贵的CPU时间。OpenGL着色器是用OpenGL着色器语言(OpenGL Shading Language, GLSL)写成的
 
 link: https://learnopengl-cn.github.io/img/01/04/pipeline.png
+取色器：https://m.fontke.com/tool/rgb/db3e54/
+		http://xiaohudie.net/RGB.html
 */
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
