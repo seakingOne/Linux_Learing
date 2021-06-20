@@ -15,4 +15,7 @@ int opengl();
 
 int opengl_more();
 
+/** 摄像机角度 **/
+int opengl_camera_angle();
+
 #endif /* opengl_hpp */

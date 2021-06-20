@@ -27,5 +27,8 @@ int main(int argc, const char * argv[]) {
 //    int result = sdl_yuv_player(filePath);
 //    cout << result << endl;
     
-    opengl_more();
+//    opengl_more();
+    
+    opengl_camera_angle();
+    
 }
