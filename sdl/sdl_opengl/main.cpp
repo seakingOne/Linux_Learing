@@ -10,6 +10,7 @@
 #include "sdl_window.h"
 #include "sdl_yuv_player.h"
 #include "opengl.h"
+#include "illumination.h"
 
 using namespace std;
 
@@ -29,6 +30,10 @@ int main(int argc, const char * argv[]) {
     
 //    opengl_more();
     
-    opengl_camera_angle();
+//    opengl_camera_angle();
     
+//    opengl();
+    
+    
+    create_illumination_demo();
 }
