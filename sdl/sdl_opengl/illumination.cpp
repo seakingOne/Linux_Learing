@@ -220,6 +220,7 @@ int create_illumination_demo() {
         glUniform3f(glGetUniformLocation(cube_shader.id, "objectColor"), 1.0f, 0.5f, 0.31f);
         glUniform3f(glGetUniformLocation(cube_shader.id, "lightColor"), 1.0f, 1.0f, 1.0f);
         glUniform3f(glGetUniformLocation(cube_shader.id, "lightPos"), 1.2f, 1.0f, 2.0f);
+        glUniform3f(glGetUniformLocation(cube_shader.id, "viewPos"), 1.2f, 1.0f, 2.0f);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)800 / (float)600, 0.1f, 100.0f);
