@@ -1,5 +1,6 @@
 //#include "2d_action.h"
-#include "3d_action.h"
+//#include "3d_action.h"
+#include "lighting.h"
 
 using namespace std;
 
@@ -9,6 +10,8 @@ int main() {
 	//int result = action();
 
 	// 3d
-	action_3d();
+	//action_3d();
+
+	lighting();
 
 }
