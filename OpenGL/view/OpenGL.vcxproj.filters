@@ -45,6 +45,9 @@
     <ClCompile Include="lighting.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="texture_mapping.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lighting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_mapping.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
