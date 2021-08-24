@@ -96,9 +96,11 @@ int textureMapping() {
 
     // 纹理
     int texture = create_texture_unit("container2.png", false);
+    int specularTexture = create_texture_unit("container2_specular.png", false);
 
     cubeShader.use();
     cubeShader.setInt("material.diffuse", 0);
+    cubeShader.setInt("material.specular", 1);
 
     // loop
     float lastFrame = 0.0f;
@@ -146,6 +148,9 @@ int textureMapping() {
         // 绑定纹理
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, specularTexture);
 
         // 渲染物体
         glBindVertexArray(cubeVAO);
